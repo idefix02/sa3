@@ -22586,7 +22586,7 @@ u32 sub_8020874(Sprite *s, s32 worldX, s32 worldY, s16 p3, Player *p, s16 p5, u8
     u8 spC[4];
     Sprite2 *temp_r6 = &p->spriteInfoBody->s;
 
-    if ((p->moveState & 0x100) || (s->hitboxes[p3].index == -1) || (p->spriteInfoBody->s.hitboxes[p5].index == -1)) {
+    if ((p->moveState & MOVESTATE_DEAD) || (s->hitboxes[p3].index == -1) || (p->spriteInfoBody->s.hitboxes[p5].index == -1)) {
         return 0U;
     }
 
@@ -22648,9 +22648,8 @@ u32 sub_8020950(Sprite *s, s32 worldX, s32 worldY, Player *p, u8 param4)
     return temp_r0;
 }
 
-u32 sub_8020A58(Sprite *s, s16 param1, s32 worldX, s32 worldY, Rect8 *playerBox, Player *p, u8 param6)
+u32 sub_8020A58(Sprite *s, s16 hbIndex, s32 worldX, s32 worldY, Rect8 *playerBox, Player *p, u8 param6)
 {
-    s32 var_r2;
     s32 var_r1;
     s32 var_r5;
     s32 midX;
@@ -22659,48 +22658,39 @@ u32 sub_8020A58(Sprite *s, s16 param1, s32 worldX, s32 worldY, Rect8 *playerBox,
     s32 playerY = I(p->qWorldY);
     u32 var_r6 = 0;
     if ((p->charFlags.anim0 == 92) || (p->charFlags.anim0 == 93)) {
-        if (p->moveState & 0x10000) {
+        if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
             playerY -= 32;
         } else {
             playerY += 32;
         }
     }
-    if (((((worldX + s->hitboxes[param1].b.left) <= (playerX + playerBox->left))
-          && !(((worldX + s->hitboxes[param1].b.left) + (s->hitboxes[param1].b.right - s->hitboxes[param1].b.left))
-               < (playerX + playerBox->left)))
-         || !(((worldX + s->hitboxes[param1].b.left) < (playerX + playerBox->left))
-              || (((playerX + playerBox->left) + RECT_WIDTH(playerBox)) < (worldX + s->hitboxes[param1].b.left))))
-        && ((((worldY + s->hitboxes[param1].b.top) <= (playerY + playerBox->top))
-             && !(((worldY + s->hitboxes[param1].b.top) + (s->hitboxes[param1].b.bottom - s->hitboxes[param1].b.top))
-                  < (playerY + playerBox->top)))
-            || !(((worldY + s->hitboxes[param1].b.top) < (playerY + playerBox->top))
-                 || (((playerY + playerBox->top) + RECT_HEIGHT(playerBox)) < (worldY + s->hitboxes[param1].b.top))))) {
-        var_r2 = ((s->hitboxes[param1].b.left + s->hitboxes[param1].b.right) >> 1) + worldX;
-        midY = worldY + ((s->hitboxes[param1].b.top + s->hitboxes[param1].b.bottom) >> 1);
+    if (HB_COLLISION(worldX, worldY, s->hitboxes[hbIndex].b, playerX, playerY, (*playerBox))) {
+        s32 var_r2 = ((s->hitboxes[hbIndex].b.left + s->hitboxes[hbIndex].b.right) >> 1) + worldX;
+        midY = worldY + ((s->hitboxes[hbIndex].b.top + s->hitboxes[hbIndex].b.bottom) >> 1);
         if (var_r2 <= playerX) {
-            var_r5 = (worldX + s->hitboxes[param1].b.right) - (playerBox->left + playerX);
+            var_r5 = (worldX + s->hitboxes[hbIndex].b.right) - (playerBox->left + playerX);
             var_r6 |= 0x40000;
         } else {
-            var_r5 = (worldX + s->hitboxes[param1].b.left) - (playerBox->right + playerX);
+            var_r5 = (worldX + s->hitboxes[hbIndex].b.left) - (playerBox->right + playerX);
             var_r6 |= 0x80000;
         }
         if (midY > playerY) {
-            midY = (worldY + s->hitboxes[param1].b.top) - (playerY + playerBox->bottom);
-            if (p->moveState & 0x00010000) {
+            midY = (worldY + s->hitboxes[hbIndex].b.top) - (playerY + playerBox->bottom);
+            if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
                 var_r1 = MIN(midY - 2, 0);
-                var_r6 = var_r6 | 0x20000;
+                var_r6 |= 0x20000;
             } else {
                 var_r1 = MIN(midY + 5, 0);
-                var_r6 = var_r6 | 0x10000;
+                var_r6 |= 0x10000;
             }
         } else {
-            midY = (worldY + s->hitboxes[param1].b.bottom) - (playerY + playerBox->top);
-            if (p->moveState & 0x00010000) {
+            midY = (worldY + s->hitboxes[hbIndex].b.bottom) - (playerY + playerBox->top);
+            if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
                 var_r1 = MAX(midY - 5, 0);
-                var_r6 = var_r6 | 0x10000;
+                var_r6 |= 0x10000;
             } else {
                 var_r1 = MAX(midY + 2, 0);
-                var_r6 = var_r6 | 0x20000;
+                var_r6 |= 0x20000;
             }
         }
         if (ABS(var_r5) < ABS(var_r1)) {
@@ -22711,7 +22701,7 @@ u32 sub_8020A58(Sprite *s, s16 param1, s32 worldX, s32 worldY, Rect8 *playerBox,
                 if ((p->qSpeedAirY < 0) && (param6 == 0)) {
                     return 0;
                 }
-                if ((!(p->moveState & 4)) && ((p->unk26 + 0x20) & 0x40)) {
+                if ((!(p->moveState & MOVESTATE_IN_AIR)) && ((p->unk26 + 0x20) & 0x40)) {
                     p->qSpeedGround = 0;
                 }
             }
