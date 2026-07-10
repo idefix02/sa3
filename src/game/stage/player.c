@@ -12930,146 +12930,141 @@ NONMATCH("asm/non_matching/game/stage/player__sub_80136DC.inc", void sub_80136DC
 }
 END_NONMATCH
 
-// (98.49%) https://decomp.me/scratch/wyHoT
+// (99.93%) https://decomp.me/scratch/wmZzy
 NONMATCH("asm/non_matching/game/stage/player__sub_8013A68.inc", void sub_8013A68(s16 arg0))
 {
-    Player *temp_r5;
-    Sprite2 *s;
-    s32 qSpeedAirX;
-    s32 qSpeedAirY;
-    s16 var_r0;
-    u16 temp_r2;
-    u16 temp_r3;
-    u8 temp_r1;
-    u8 temp_r1_2;
-    u8 theta;
-    s32 qScaleX, qScaleY;
+    Player *p;
+    Sprite *s;
+    u16 state;
     CamCoord camX, camY;
     SpriteTransform *tf;
     u16 anim2;
     s32 state1;
 
-    temp_r5 = &gPlayers[arg0];
-    s = &temp_r5->spriteInfoLimbs->s;
-    tf = &temp_r5->spriteInfoLimbs->tf;
+    p = &gPlayers[arg0];
+    s = &p->spriteInfoLimbs->s;
+    tf = &p->spriteInfoLimbs->tf;
     camX = gCamera.x;
     camY = gCamera.y;
-    if (!(temp_r5->charFlags.character == CREAM || temp_r5->charFlags.character == TAILS)) {
+    if (!(p->charFlags.character == CREAM || p->charFlags.character == TAILS)) {
         return;
     }
-    if (temp_r5->moveState & MOVESTATE_1000000) {
+    if (p->moveState & MOVESTATE_1000000) {
         return;
     }
-    if (temp_r5->charFlags.unk2C_40) {
-        temp_r5->charFlags.unk2C_40 = 0;
+    if (p->charFlags.unk2C_40) {
+        p->charFlags.unk2C_40 = 0;
         return;
     }
-    tf->x = I(temp_r5->qWorldX) - camX;
-    tf->y = I(temp_r5->qWorldY) - camY;
+    tf->x = I(p->qWorldX) - camX;
+    tf->y = I(p->qWorldY) - camY;
     s->animSpeed = 0x10;
-    if (temp_r5->moveState & MOVESTATE_80) {
+    if (p->moveState & MOVESTATE_80) {
         s->animSpeed = 8;
     }
-    anim2 = temp_r5->charFlags.anim2;
-    temp_r3 = temp_r5->charFlags.state1;
-    anim2 -= gPlayerCharacterIdleAnims[temp_r5->charFlags.character];
-    if ((!(anim2 == 19 || anim2 == 20) || (temp_r3 != 1)) && ((anim2 != 0xB) || (temp_r3 != 0))) {
+    anim2 = p->charFlags.anim2;
+    state = p->charFlags.state1;
+    anim2 -= gPlayerCharacterIdleAnims[p->charFlags.character];
+    if ((!(anim2 == 19 || anim2 == 20) || (state != 1)) && ((anim2 != 0xB) || (state != 0))) {
         if (anim2 != 0x83) {
             return;
         }
-        if (temp_r3 != 0) {
+        if (state != 0) {
             return;
         }
     }
 
-    if (temp_r5->charFlags.character == CREAM) {
-        temp_r1_2 = temp_r5->unk26;
-        temp_r5->unk14C.arr_u8[0] = temp_r1_2;
-        tf->rotation = temp_r1_2 * 4;
-        s->frameFlags = (s->frameFlags & ~0x1F) | 0x24;
+    if (p->charFlags.character == CREAM) {
+        s32 qScaleX, qScaleY;
+        u32 val = p->unk26;
+        p->unk14C = val;
+        tf->rotation = val * 4;
+        SPRITE_FLAG_CLEAR(s, ROT_SCALE);
+        s->frameFlags |= SPRITE_FLAG(ROT_SCALE, 4) | SPRITE_FLAG_MASK_ROT_SCALE_ENABLE;
 
-        if (!(temp_r5->moveState & MOVESTATE_FACING_LEFT)) {
-            tf->qScaleX = -Q(1);
+        if (!(p->moveState & MOVESTATE_FACING_LEFT)) {
+            tf->qScaleX = Q(-1);
         } else {
-            tf->qScaleX = +Q(1);
+            tf->qScaleX = Q(+1);
         }
 
-        if (temp_r5->moveState & MOVESTATE_GRAVITY_SWITCHED) {
-            tf->qScaleX = 0 - (u16)tf->qScaleX;
+        if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
+            tf->qScaleX = -tf->qScaleX;
         }
-        if (tf->qScaleX < 0) {
-            tf->x = (u16)tf->x - 1;
+        if (tf->qScaleX < Q(0)) {
+            tf->x--;
         }
-        if (temp_r5->moveState & MOVESTATE_GRAVITY_SWITCHED) {
-            s32 rot, rot0;
+        if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
             tf->qScaleY = Q(1);
-            rot0 = (tf->rotation + 0x100);
-            rot = -0x100;
-            tf->rotation = (rot - rot0) & 0x3FF;
+            tf->rotation = (-(tf->rotation + 0x100) - 0x100);
+            tf->rotation &= 0x3FF;
         } else {
             tf->qScaleY = Q(1);
         }
-        qScaleX = I(tf->qScaleX * temp_r5->unkA0);
-        qScaleY = I(tf->qScaleY * temp_r5->unkA2);
+        qScaleX = I(tf->qScaleX * p->unkA0);
+        qScaleY = I(tf->qScaleY * p->unkA2);
         tf->qScaleX = qScaleX;
         tf->qScaleY = qScaleY;
-        UpdateSpriteAnimation((Sprite *)s);
-        TransformSprite((Sprite *)s, tf);
-        if (!(MOVESTATE_DEAD & temp_r5->moveState)) {
-            if (temp_r5->moveState & MOVESTATE_4000000) {
+        UpdateSpriteAnimation(s);
+        TransformSprite(s, tf);
+        if (!(MOVESTATE_100 & p->moveState)) {
+            if (p->moveState & MOVESTATE_4000000) {
                 return;
             }
-            if ((temp_r5->framesInvulnerable != 0) && (gStageData.timer & 2)) {
+            if ((p->framesInvulnerable != 0) && (gStageData.timer & 2)) {
                 return;
             }
         }
 
-        DisplaySprite((Sprite *)s);
-    } else if (temp_r5->charFlags.character == TAILS) {
-        qSpeedAirX = temp_r5->qSpeedAirX;
-        qSpeedAirY = temp_r5->qSpeedAirY;
+        DisplaySprite(s);
+    } else if (p->charFlags.character == TAILS) {
+        u8 theta;
+        s32 qScaleX, qScaleY;
+        s32 qSpeedAirX, qSpeedAirY;
+        qSpeedAirX = p->qSpeedAirX;
+        qSpeedAirY = p->qSpeedAirY;
         if ((qSpeedAirX != 0) || (qSpeedAirY != 0)) {
             theta = (ArcTan2(qSpeedAirX, qSpeedAirY) >> 8) + 0x40;
         } else {
-            if (temp_r5->moveState & MOVESTATE_FACING_LEFT) {
+            if (p->moveState & MOVESTATE_FACING_LEFT) {
                 theta = -0x40;
             } else {
                 theta = +0x40;
             }
         }
-        temp_r5->unk148.arr_u8[1] = theta;
+        p->unk148.arr_u8[1] = theta;
         tf->rotation = theta * 4;
-        s->frameFlags = (s->frameFlags & ~0x1F) | 0x25;
-        if (!(temp_r5->moveState & MOVESTATE_FACING_LEFT)) {
-            tf->qScaleX = -Q(1);
+        SPRITE_FLAG_CLEAR(s, ROT_SCALE);
+        s->frameFlags |= SPRITE_FLAG(ROT_SCALE, 5) | SPRITE_FLAG_MASK_ROT_SCALE_ENABLE;
+        if (!(p->moveState & MOVESTATE_FACING_LEFT)) {
+            tf->qScaleX = Q(-1);
         } else {
-            tf->qScaleX = +Q(1);
+            tf->qScaleX = Q(+1);
         }
 
-        if (temp_r5->moveState & MOVESTATE_GRAVITY_SWITCHED) {
+        if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
             tf->qScaleX = -tf->qScaleX;
         }
-        if (tf->qScaleX < 0) {
+        if (tf->qScaleX < Q(0)) {
             tf->x--;
         }
-        if (temp_r5->moveState & MOVESTATE_GRAVITY_SWITCHED) {
-            s32 rot;
+        if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
             tf->qScaleY = Q(1);
-            rot = (tf->rotation + 0x100);
-            tf->rotation = ((-0x100) - rot) & 0x3FF;
+            tf->rotation = (-(tf->rotation + 0x100) - 0x100);
+            tf->rotation &= 0x3FF;
         } else {
             tf->qScaleY = Q(1);
         }
-        qScaleX = I(tf->qScaleX * temp_r5->unkA0);
-        qScaleY = I(tf->qScaleY * temp_r5->unkA2);
+        qScaleX = I(tf->qScaleX * p->unkA0);
+        qScaleY = I(tf->qScaleY * p->unkA2);
         tf->qScaleX = qScaleX;
         tf->qScaleY = qScaleY;
-        UpdateSpriteAnimation((Sprite *)s);
-        TransformSprite((Sprite *)s, tf);
+        UpdateSpriteAnimation(s);
+        TransformSprite(s, tf);
 
-        if ((MOVESTATE_DEAD & temp_r5->moveState)
-            || (!(temp_r5->moveState & MOVESTATE_4000000) && ((temp_r5->framesInvulnerable == 0) || !(gStageData.timer & 2)))) {
-            DisplaySprite((Sprite *)s);
+        if ((MOVESTATE_100 & p->moveState)
+            || (!(p->moveState & MOVESTATE_4000000) && ((p->framesInvulnerable == 0) || !(gStageData.timer & 2)))) {
+            DisplaySprite(s);
         }
     }
 }
