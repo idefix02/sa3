@@ -12785,15 +12785,16 @@ void sub_801350C(Player *p)
     }
 }
 
-// https://decomp.me/scratch/4SE2S: 100% but fakematch (one use of register+asm)
-NONMATCH("asm/non_matching/game/stage/player__sub_80136DC.inc", void sub_80136DC(s16 playerId))
+void sub_80136DC(s16 playerId)
 {
     Player *p;
     Sprite *s;
     s16 display;
     u16 transform;
     SpriteTransform *tf;
-    CamCoord camX, camY;
+    s16 camX, camY;
+    s32 moveState;
+    bool32 playerDead;
 
     p = &gPlayers[playerId];
     s = (Sprite *)&p->spriteInfoBody->s;
@@ -12891,28 +12892,27 @@ NONMATCH("asm/non_matching/game/stage/player__sub_80136DC.inc", void sub_80136DC
         UpdateSpriteAnimation(s);
     }
     display = TRUE;
-    {
-        u32 playerDead = p->moveState & MOVESTATE_DEAD;
-        register u32 moveState asm("r3") = p->moveState;
-        if (!playerDead) {
-            if ((gStageData.gameMode != 7) || (gStageData.levelTimer != 0)) {
-                if ((moveState &= MOVESTATE_4000000)) {
-                    display = FALSE;
-                } else {
-                    if (!(p->moveState & MOVESTATE_200)) {
-                        if ((p->framesInvulnerable != 0) && (gStageData.timer & 2)) {
+    playerDead = p->moveState & MOVESTATE_DEAD;
+    moveState = p->moveState;
+    if (!playerDead) {
+        if ((gStageData.gameMode != 7) || (gStageData.levelTimer != 0)) {
+            if ((moveState &= MOVESTATE_4000000)) {
+                display = FALSE;
+            } else {
+                if (!(p->moveState & MOVESTATE_200)) {
+                    moveState = -1; // Dead store for matching
+                    if ((p->framesInvulnerable != 0) && (gStageData.timer & 2)) {
+                        display = FALSE;
+                    }
+
+                    if (p->unk66 != 0) {
+                        if ((p != &gPlayers[gStageData.playerIndex]) || (gStageData.timer & 2)) {
                             display = FALSE;
                         }
-
-                        if (p->unk66 != 0) {
-                            if ((p != &gPlayers[gStageData.playerIndex]) || (gStageData.timer & 2)) {
-                                display = FALSE;
-                            }
-                        }
                     }
-                    if (gStageData.unk4 == 5) {
-                        display = TRUE;
-                    }
+                }
+                if (gStageData.unk4 == 5) {
+                    display = TRUE;
                 }
             }
         }
@@ -12928,7 +12928,6 @@ NONMATCH("asm/non_matching/game/stage/player__sub_80136DC.inc", void sub_80136DC
         }
     }
 }
-END_NONMATCH
 
 void sub_8013A68(s16 arg0)
 {
