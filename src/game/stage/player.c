@@ -12930,19 +12930,18 @@ NONMATCH("asm/non_matching/game/stage/player__sub_80136DC.inc", void sub_80136DC
 }
 END_NONMATCH
 
-// (99.93%) https://decomp.me/scratch/wmZzy
-NONMATCH("asm/non_matching/game/stage/player__sub_8013A68.inc", void sub_8013A68(s16 arg0))
+void sub_8013A68(s16 arg0)
 {
     Player *p;
     Sprite *s;
     u16 state;
-    CamCoord camX, camY;
+    s16 camX, camY;
     SpriteTransform *tf;
     u16 anim2;
     s32 state1;
 
     p = &gPlayers[arg0];
-    s = &p->spriteInfoLimbs->s;
+    s = (Sprite *)&p->spriteInfoLimbs->s;
     tf = &p->spriteInfoLimbs->tf;
     camX = gCamera.x;
     camY = gCamera.y;
@@ -12977,9 +12976,11 @@ NONMATCH("asm/non_matching/game/stage/player__sub_8013A68.inc", void sub_8013A68
     if (p->charFlags.character == CREAM) {
         s32 qScaleX, qScaleY;
         u32 val = p->unk26;
-        p->unk14C = val;
+        p->unk14C.arr_u8[0] = val;
         tf->rotation = val * 4;
+
         SPRITE_FLAG_CLEAR(s, ROT_SCALE);
+        val = SPRITE_FLAG(ROT_SCALE, 4) | SPRITE_FLAG_MASK_ROT_SCALE_ENABLE; // This dead store is for matching
         s->frameFlags |= SPRITE_FLAG(ROT_SCALE, 4) | SPRITE_FLAG_MASK_ROT_SCALE_ENABLE;
 
         if (!(p->moveState & MOVESTATE_FACING_LEFT)) {
@@ -13007,7 +13008,7 @@ NONMATCH("asm/non_matching/game/stage/player__sub_8013A68.inc", void sub_8013A68
         tf->qScaleY = qScaleY;
         UpdateSpriteAnimation(s);
         TransformSprite(s, tf);
-        if (!(MOVESTATE_100 & p->moveState)) {
+        if (!(p->moveState & MOVESTATE_DEAD)) {
             if (p->moveState & MOVESTATE_4000000) {
                 return;
             }
@@ -13062,13 +13063,12 @@ NONMATCH("asm/non_matching/game/stage/player__sub_8013A68.inc", void sub_8013A68
         UpdateSpriteAnimation(s);
         TransformSprite(s, tf);
 
-        if ((MOVESTATE_100 & p->moveState)
+        if ((p->moveState & MOVESTATE_DEAD)
             || (!(p->moveState & MOVESTATE_4000000) && ((p->framesInvulnerable == 0) || !(gStageData.timer & 2)))) {
             DisplaySprite(s);
         }
     }
 }
-END_NONMATCH
 
 void SetPlayerSpawnPosition(s32 levelIndex, s32 pid)
 {
