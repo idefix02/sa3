@@ -106,8 +106,8 @@ void TaskDestructor_80194C8(struct Task *t);
 void TaskDestructor_8019504(struct Task *t);
 
 void sub_801320C(Player *p, PlayerSpriteInfo *spriteInfoBody);
-void sub_80136DC(s16 param0);
-void sub_8013A68(s16 param0);
+void sub_80136DC(s16 playerID);
+void sub_8013A68(s16 playerID);
 bool16 sub_8014A60(Player *p);
 bool16 sub_8014D70(Player *p);
 s16 sub_8015064(Player *p);
@@ -12841,7 +12841,7 @@ void sub_80136DC(s16 playerId)
         if (!(p->moveState & MOVESTATE_FACING_LEFT)) {
             tf->qScaleX = Q(-1);
         } else {
-            tf->qScaleX = Q(1);
+            tf->qScaleX = Q(+1);
         }
 
         if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
@@ -12852,8 +12852,8 @@ void sub_80136DC(s16 playerId)
         }
         if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
             tf->qScaleY = Q(1);
-            tf->rotation = (-(tf->rotation + 0x100) - 0x100);
-            tf->rotation &= 0x3FF;
+            tf->rotation = (-(tf->rotation + SIN_PERIOD / 4) - SIN_PERIOD / 4);
+            tf->rotation = CLAMP_SIN_PERIOD(tf->rotation);
         } else {
             tf->qScaleY = Q(1);
         }
@@ -12929,7 +12929,7 @@ void sub_80136DC(s16 playerId)
     }
 }
 
-void sub_8013A68(s16 arg0)
+void sub_8013A68(s16 playerID)
 {
     Player *p;
     Sprite *s;
@@ -12939,7 +12939,7 @@ void sub_8013A68(s16 arg0)
     u16 anim2;
     s32 state1;
 
-    p = &gPlayers[arg0];
+    p = &gPlayers[playerID];
     s = (Sprite *)&p->spriteInfoLimbs->s;
     tf = &p->spriteInfoLimbs->tf;
     camX = gCamera.x;
@@ -12996,8 +12996,8 @@ void sub_8013A68(s16 arg0)
         }
         if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
             tf->qScaleY = Q(1);
-            tf->rotation = (-(tf->rotation + 0x100) - 0x100);
-            tf->rotation &= 0x3FF;
+            tf->rotation = (-(tf->rotation + SIN_PERIOD / 4) - SIN_PERIOD / 4);
+            tf->rotation = CLAMP_SIN_PERIOD(tf->rotation);
         } else {
             tf->qScaleY = Q(1);
         }
@@ -13050,8 +13050,8 @@ void sub_8013A68(s16 arg0)
         }
         if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
             tf->qScaleY = Q(1);
-            tf->rotation = (-(tf->rotation + 0x100) - 0x100);
-            tf->rotation &= 0x3FF;
+            tf->rotation = (-(tf->rotation + SIN_PERIOD / 4) - SIN_PERIOD / 4);
+            tf->rotation = CLAMP_SIN_PERIOD(tf->rotation);
         } else {
             tf->qScaleY = Q(1);
         }
