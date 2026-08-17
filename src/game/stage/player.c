@@ -12938,6 +12938,7 @@ void sub_8013A68(s16 playerID)
     SpriteTransform *tf;
     u16 anim2;
     s32 state1;
+    u8 theta;
 
     p = &gPlayers[playerID];
     s = (Sprite *)&p->spriteInfoLimbs->s;
@@ -12974,12 +12975,11 @@ void sub_8013A68(s16 playerID)
 
     if (p->charFlags.character == CREAM) {
         s32 qScaleX, qScaleY;
-        u32 val = p->unk26;
-        p->unk14C.arr_u8[0] = val;
-        tf->rotation = val * 4;
+        theta = p->unk26;
+        p->unk14C.arr_u8[0] = theta;
+        tf->rotation = theta * 4;
 
         SPRITE_FLAG_CLEAR(s, ROT_SCALE);
-        val = SPRITE_FLAG(ROT_SCALE, 4) | SPRITE_FLAG_MASK_ROT_SCALE_ENABLE; // This dead store is for matching
         s->frameFlags |= SPRITE_FLAG(ROT_SCALE, 4) | SPRITE_FLAG_MASK_ROT_SCALE_ENABLE;
 
         if (!(p->moveState & MOVESTATE_FACING_LEFT)) {
@@ -13018,7 +13018,6 @@ void sub_8013A68(s16 playerID)
 
         DisplaySprite(s);
     } else if (p->charFlags.character == TAILS) {
-        u8 theta;
         s32 qScaleX, qScaleY;
         s32 qSpeedAirX, qSpeedAirY;
         qSpeedAirX = p->qSpeedAirX;
