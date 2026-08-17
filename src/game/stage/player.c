@@ -9557,7 +9557,7 @@ void sub_800FB94(Player *p, u8 arg1)
                 p->qWorldX = Q(gCamera.x + DISPLAY_WIDTH);
             }
         } else {
-            temp_r0 = (p->qWorldY >> 8) - gCamera.y;
+            temp_r0 = I(p->qWorldY) - gCamera.y;
             if (temp_r0 <= 7) {
                 p->qWorldY = Q(gCamera.y + 8);
             } else if (temp_r0 > DISPLAY_HEIGHT) {
@@ -9588,25 +9588,25 @@ void sub_800FC30(Player *p)
     bool32 playerNotSonic = (p->charFlags.character == SONIC) ? FALSE : TRUE;
 
     if (DPAD_UP & p->keyInput) {
-        p->qSpeedAirY -= 0x40;
+        p->qSpeedAirY -= Q(0.25);
     } else if (DPAD_DOWN & p->keyInput) {
-        p->qSpeedAirY += 0x40;
+        p->qSpeedAirY += Q(0.25);
     } else {
-        if (p->qSpeedAirY != 0) {
-            if (p->qSpeedAirY < 0) {
-                p->qSpeedAirY += 0x10;
+        if (p->qSpeedAirY != Q(0)) {
+            if (p->qSpeedAirY < Q(0)) {
+                p->qSpeedAirY += Q(0.0625);
             } else {
-                p->qSpeedAirY -= 0x10;
+                p->qSpeedAirY -= Q(0.0625);
             }
         }
 
         if (ABS(p->qSpeedAirY) < 0x40) {
-            p->qSpeedAirY = 0;
+            p->qSpeedAirY = Q(0);
         }
     }
 
     if (ABS(p->qSpeedAirY) > Q(2)) {
-        if (p->qSpeedAirY < 0) {
+        if (p->qSpeedAirY < Q(0)) {
             p->qSpeedAirY = -Q(2);
         } else {
             p->qSpeedAirY = +Q(2);
@@ -9618,30 +9618,30 @@ void sub_800FC30(Player *p)
     } else if (DPAD_RIGHT & p->keyInput) {
         p->qSpeedAirX += Q(0.25);
     } else {
-        if (p->qSpeedAirX != 0) {
-            if (p->qSpeedAirX < 0) {
-                p->qSpeedAirX += 0x10;
+        if (p->qSpeedAirX != Q(0)) {
+            if (p->qSpeedAirX < Q(0)) {
+                p->qSpeedAirX += Q(0.0625);
             } else {
-                p->qSpeedAirX -= 0x10;
+                p->qSpeedAirX -= Q(0.0625);
             }
         }
 
-        if (ABS(p->qSpeedAirX) < 0x40) {
-            p->qSpeedAirX = 0;
+        if (ABS(p->qSpeedAirX) < Q(0.25)) {
+            p->qSpeedAirX = Q(0);
         }
     }
 
     if (ABS(p->qSpeedAirX) > Q(2)) {
-        if (p->qSpeedAirX < 0) {
+        if (p->qSpeedAirX < Q(0)) {
             p->qSpeedAirX = -Q(2);
         } else {
             p->qSpeedAirX = +Q(2);
         }
     }
     temp_r0_3 = (s16)p->qSpeedAirY;
-    if ((s32)temp_r0_3 < 0) {
+    if ((s32)temp_r0_3 < Q(0)) {
         p->charFlags.anim0 = (!playerNotSonic) ? 0x10F : 0x12D;
-    } else if ((s32)temp_r0_3 > 0) {
+    } else if ((s32)temp_r0_3 > Q(0)) {
         p->charFlags.anim0 = (!playerNotSonic) ? 0x110 : 0x12E;
     } else {
         p->charFlags.anim0 = (!playerNotSonic) ? 0x10E : 0x12C;
@@ -9655,21 +9655,21 @@ void sub_800FD60(Player *p)
     } else if (DPAD_DOWN & p->keyInput) {
         p->qSpeedAirY += Q(0.25);
     } else {
-        if (p->qSpeedAirY != 0) {
-            if (p->qSpeedAirY < 0) {
-                p->qSpeedAirY += 0x10;
+        if (p->qSpeedAirY != Q(0)) {
+            if (p->qSpeedAirY < Q(0)) {
+                p->qSpeedAirY += Q(0.0625);
             } else {
-                p->qSpeedAirY -= 0x10;
+                p->qSpeedAirY -= Q(0.0625);
             }
         }
 
         if (ABS(p->qSpeedAirY) < Q(0.25)) {
-            p->qSpeedAirY = 0;
+            p->qSpeedAirY = Q(0);
         }
     }
 
     if (ABS(p->qSpeedAirY) > Q(1.5)) {
-        if (p->qSpeedAirY < 0) {
+        if (p->qSpeedAirY < Q(0)) {
             p->qSpeedAirY = -Q(1.5);
         } else {
             p->qSpeedAirY = +Q(1.5);
@@ -9681,21 +9681,21 @@ void sub_800FD60(Player *p)
     } else if (DPAD_RIGHT & p->keyInput) {
         p->qSpeedAirX += Q(0.25);
     } else {
-        if (p->qSpeedAirX != 0) {
-            if (p->qSpeedAirX < 0) {
-                p->qSpeedAirX += 0x10;
+        if (p->qSpeedAirX != Q(0)) {
+            if (p->qSpeedAirX < Q(0)) {
+                p->qSpeedAirX += Q(0.0625);
             } else {
-                p->qSpeedAirX -= 0x10;
+                p->qSpeedAirX -= Q(0.0625);
             }
         }
 
-        if (ABS(p->qSpeedAirX) <= 0x3F) {
-            p->qSpeedAirX = 0;
+        if (ABS(p->qSpeedAirX) < Q(0.25)) {
+            p->qSpeedAirX = Q(0);
         }
     }
 
     if (ABS(p->qSpeedAirX) > Q(1.5)) {
-        if (p->qSpeedAirX < 0) {
+        if (p->qSpeedAirX < Q(0)) {
             p->qSpeedAirX = -Q(1.5);
         } else {
             p->qSpeedAirX = +Q(1.5);
