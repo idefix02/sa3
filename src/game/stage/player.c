@@ -107,7 +107,7 @@ void TaskDestructor_8019504(struct Task *t);
 
 void sub_801320C(Player *p, PlayerSpriteInfo *spriteInfoBody);
 void sub_80136DC(s16 playerID);
-void sub_8013A68(s16 playerID);
+void Player_JumpingAnimateAndDrawLimbs(s16 playerID);
 bool16 sub_8014A60(Player *p);
 bool16 sub_8014D70(Player *p);
 s16 sub_8015064(Player *p);
@@ -1097,7 +1097,7 @@ void Task_8005068(void)
         sub_801320C(p, p->spriteInfoBody);
         sub_80136DC(temp_r1->playerId);
         if (gStageData.gameMode != GAME_MODE_MP_SINGLE_PACK) {
-            sub_8013A68(temp_r1->playerId);
+            Player_JumpingAnimateAndDrawLimbs(temp_r1->playerId);
         }
         sub_8014670(p);
         if (gStageData.gameMode != GAME_MODE_MP_SINGLE_PACK) {
@@ -12845,8 +12845,8 @@ void sub_80136DC(s16 playerId)
         } else {
             tf->qScaleY = Q(1);
         }
-        qScaleX = I(tf->qScaleX * p->unkA0);
-        qScaleY = I(tf->qScaleY * p->unkA2);
+        qScaleX = Q_MUL(tf->qScaleX, p->unkA0);
+        qScaleY = Q_MUL(tf->qScaleY, p->unkA2);
         tf->qScaleX = qScaleX;
         tf->qScaleY = qScaleY;
         SPRITE_FLAG_CLEAR(s, PRIORITY);
@@ -12917,7 +12917,7 @@ void sub_80136DC(s16 playerId)
     }
 }
 
-void sub_8013A68(s16 playerID)
+void Player_JumpingAnimateAndDrawLimbs(s16 playerID)
 {
     Player *p;
     Sprite *s;
@@ -12961,7 +12961,7 @@ void sub_8013A68(s16 playerID)
         }
     }
 
-    if (p->charFlags.character == CREAM) {
+    if (p->charFlags.character == CREAM) { // Cream => two ears
         s32 qScaleX, qScaleY;
         theta = p->unk26;
         p->unk14C.arr_u8[0] = theta;
@@ -12984,13 +12984,13 @@ void sub_8013A68(s16 playerID)
         }
         if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
             tf->qScaleY = Q(1);
-            tf->rotation = (-(tf->rotation + SIN_PERIOD / 4) - SIN_PERIOD / 4);
+            tf->rotation = (-(tf->rotation + DEG_TO_SIN(90)) - DEG_TO_SIN(90));
             tf->rotation = CLAMP_SIN_PERIOD(tf->rotation);
         } else {
             tf->qScaleY = Q(1);
         }
-        qScaleX = I(tf->qScaleX * p->unkA0);
-        qScaleY = I(tf->qScaleY * p->unkA2);
+        qScaleX = Q_MUL(tf->qScaleX, p->unkA0);
+        qScaleY = Q_MUL(tf->qScaleY, p->unkA2);
         tf->qScaleX = qScaleX;
         tf->qScaleY = qScaleY;
         UpdateSpriteAnimation(s);
@@ -13005,18 +13005,18 @@ void sub_8013A68(s16 playerID)
         }
 
         DisplaySprite(s);
-    } else if (p->charFlags.character == TAILS) {
+    } else if (p->charFlags.character == TAILS) { // Tails => two tails
         s32 qScaleX, qScaleY;
         s32 qSpeedAirX, qSpeedAirY;
         qSpeedAirX = p->qSpeedAirX;
         qSpeedAirY = p->qSpeedAirY;
         if ((qSpeedAirX != 0) || (qSpeedAirY != 0)) {
-            theta = (ArcTan2(qSpeedAirX, qSpeedAirY) >> 8) + 0x40;
+            theta = (ArcTan2(qSpeedAirX, qSpeedAirY) >> 8) + DEG_TO_SIN(22.5);
         } else {
             if (p->moveState & MOVESTATE_FACING_LEFT) {
-                theta = -0x40;
+                theta = DEG_TO_SIN(-22.5);
             } else {
-                theta = +0x40;
+                theta = DEG_TO_SIN(+22.5);
             }
         }
         p->unk148.arr_u8[1] = theta;
@@ -13037,13 +13037,13 @@ void sub_8013A68(s16 playerID)
         }
         if (p->moveState & MOVESTATE_GRAVITY_SWITCHED) {
             tf->qScaleY = Q(1);
-            tf->rotation = (-(tf->rotation + SIN_PERIOD / 4) - SIN_PERIOD / 4);
+            tf->rotation = (-(tf->rotation + DEG_TO_SIN(90)) - DEG_TO_SIN(90));
             tf->rotation = CLAMP_SIN_PERIOD(tf->rotation);
         } else {
             tf->qScaleY = Q(1);
         }
-        qScaleX = I(tf->qScaleX * p->unkA0);
-        qScaleY = I(tf->qScaleY * p->unkA2);
+        qScaleX = Q_MUL(tf->qScaleX, p->unkA0);
+        qScaleY = Q_MUL(tf->qScaleY, p->unkA2);
         tf->qScaleX = qScaleX;
         tf->qScaleY = qScaleY;
         UpdateSpriteAnimation(s);
