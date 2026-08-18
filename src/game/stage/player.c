@@ -10599,7 +10599,6 @@ s32 sub_8011024(s16 arg0, Player *p, u8 *arg2, u32 *arg3)
     u32 dummyArg3;
     s32 temp_r2;
     u16 tempArg0;
-    u16 var_r0;
     s32 tempArg2;
 
     tempArg0 = arg0;
@@ -10623,20 +10622,16 @@ s32 sub_8011024(s16 arg0, Player *p, u8 *arg2, u32 *arg3)
     }
     switch (tempArg0) {
         case 0:
-            var_r0 = 0;
-            temp_r2 = sub_80110E8(var_r0, p, arg2, arg3);
+            temp_r2 = sub_80110E8(0, p, arg2, arg3);
             break;
         case 1:
-            var_r0 = 1;
-            temp_r2 = sub_80110E8(var_r0, p, arg2, arg3);
+            temp_r2 = sub_80110E8(1, p, arg2, arg3);
             break;
         case 2:
-            var_r0 = 2;
-            temp_r2 = sub_80110E8(var_r0, p, arg2, arg3);
+            temp_r2 = sub_80110E8(2, p, arg2, arg3);
             break;
         case 3:
-            var_r0 = 3;
-            temp_r2 = sub_80110E8(var_r0, p, arg2, arg3);
+            temp_r2 = sub_80110E8(3, p, arg2, arg3);
             break;
         default:
             return 0;
