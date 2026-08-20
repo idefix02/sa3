@@ -12879,11 +12879,11 @@ void sub_80136DC(s16 playerId)
     moveState = p->moveState;
     if (!playerDead) {
         if ((gStageData.gameMode != 7) || (gStageData.levelTimer != 0)) {
-            if ((moveState &= MOVESTATE_4000000)) {
+            if (moveState & MOVESTATE_4000000) {
                 display = FALSE;
             } else {
-                if (!(p->moveState & MOVESTATE_200)) {
-                    moveState = -1; // Dead store for matching
+                moveState = p->moveState;
+                if (!(moveState & MOVESTATE_200)) {
                     if ((p->framesInvulnerable != 0) && (gStageData.timer & 2)) {
                         display = FALSE;
                     }
